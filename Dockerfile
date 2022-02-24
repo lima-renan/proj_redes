@@ -1,4 +1,4 @@
-#Imagem do Linux com arquivos do projeto
+#Criar ambiente JDK-8
 FROM openjdk:8
 WORkDIR /root/proj_redes/src
 ADD proj_redes_renan /root/proj_redes
