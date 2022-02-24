@@ -23,16 +23,16 @@
 hs_err_pid*
 
 #vscode folder
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-!.vscode/*.code-snippets
+proj_redes_renan/.vscode/*
+!proj_redes_renan/.vscode/settings.json
+!proj_redes_renan/.vscode/tasks.json
+!proj_redes_renan/.vscode/launch.json
+!proj_redes_renan/.vscode/extensions.json
+!proj_redes_renan/.vscode/*.code-snippets
 
 # Local History for Visual Studio Code
-.history/
+proj_redes_renan/.history/
 
 # Built Visual Studio Code Extensions
 *.vsix
-
+proj_redes_renan/.vscode/settings.json
