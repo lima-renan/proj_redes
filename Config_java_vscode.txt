@@ -1,0 +1,1 @@
+https://stackoverflow.com/questions/68205412/setting-java-home-for-jdk-11-in-ubuntu-for-vscode
