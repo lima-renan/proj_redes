@@ -1,0 +1,7 @@
+{
+    "java.project.sourcePaths": [
+        "proj_redes_renan/Proj/src",
+        "proj_redes_renan/ConnProj/src"
+    ],
+    "java.dependency.packagePresentation": "hierarchical"
+}
