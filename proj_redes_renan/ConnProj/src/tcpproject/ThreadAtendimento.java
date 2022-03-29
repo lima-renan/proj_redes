@@ -1,3 +1,4 @@
+package tcpproject;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
@@ -30,7 +31,7 @@ public class ThreadAtendimento extends Thread {
                 writer.writeBytes(texto.toUpperCase() + "\n");
             }
             catch(Exception e){
-
+                e.printStackTrace();
             }
         }
     
