@@ -3,12 +3,12 @@ package udpproject;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
+
 
 public class UDPClient {
     public static void main (String[] args) throws Exception {
 
-        DatagramSocket clientSocket = new DatagramSocket();
+        DatagramSocket clientSocket = new DatagramSocket(); // Sistema Operacional assina uma porta
 
         InetAddress IPAddress = InetAddress.getByName("127.0.0.1");
 
@@ -16,6 +16,24 @@ public class UDPClient {
         sendData = "eu sou um cliente!!".getBytes();
 
         DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 9876);
+
+        clientSocket.send(sendPacket);
+
+        System.out.println("Mensagem enviada para o servidor!");
+
+        byte[] recBuffer = new byte[1024];
+
+        DatagramPacket recPkt = new DatagramPacket(recBuffer, recBuffer.length);
+
+        clientSocket.receive(recPkt);
+
+        String informacao = new String(recPkt.getData(),
+                recPkt.getOffset(),
+                recPkt.getLength());
+
+        System.out.println("Recebido do servidor: " + informacao);
+
+        clientSocket.close();
 
     }
 }
