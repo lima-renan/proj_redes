@@ -1,5 +1,6 @@
 package udpproject;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -7,12 +8,12 @@ import java.net.InetAddress;
 public class UDPServer {
 
     public static void main(String[] args){
-
-        try{
-
-            DatagramSocket serverSocket = new DatagramSocket(9876);
-
-            while(true){
+        try {
+        
+            DatagramSocket serverSocket;
+            serverSocket = new DatagramSocket(9876);
+            
+            while(true){ 
 
                 byte[] recBuffer = new byte[1024];
 
@@ -36,9 +37,10 @@ public class UDPServer {
 
                 System.out.println("Mensagem enviada pelo server");
             }
-        }
-        catch (Exception e){
-            
+
+        } catch (IOException e) {
+            //Imprime o erro
+            e.printStackTrace();
         }
 
     }

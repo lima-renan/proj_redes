@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Launch MensagemUDP",
+            "request": "launch",
+            "mainClass": "mensagemproject.MensagemUDP",
+            "projectName": "proj_redes_2e4fbc3f"
+        },
+        {
+            "type": "java",
             "name": "Launch UDPServer",
             "request": "launch",
             "mainClass": "udpproject.UDPServer",
