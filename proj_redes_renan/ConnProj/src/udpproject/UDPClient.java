@@ -4,37 +4,52 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-
+import mensagemproject.MensagemUDP;
+import Gson
 
 public class UDPClient {
     public static void main (String[] args) throws IOException {
 
         DatagramSocket clientSocket = new DatagramSocket(); // Sistema Operacional assina uma porta
 
-        InetAddress IPAddress = InetAddress.getByName("127.0.0.1");
+        InetAddress IPAddress = InetAddress.getByName("127.0.0.1"); //Define um IP
 
-        byte[] sendData = new byte [1024];
-        sendData = "eu sou um cliente!!".getBytes();
+        while(true){
 
-        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 9876);
+            //Cria uma nova mensagem
+            MensagemUDP msgudp = new MensagemUDP();
+            String newMsg = MensagemUDP.capturaMensagem();
 
-        clientSocket.send(sendPacket);
+            //caso o usuário digite sair, o processo é encerrado
+            if(newMsg.equals("sair")){
+                break;
+            }
+            msgudp.setMensagem(newMsg); 
+            
+            MensagemUDP.setEnvio(msgudp.getMensagem());
 
-        System.out.println("Mensagem enviada para o servidor!");
+            Gson gson = new Gson();
 
-        byte[] recBuffer = new byte[1024];
+            byte[] sendData = new byte [1024];
+            sendData = (msgudp.getMensagem()).getBytes();
 
-        DatagramPacket recPkt = new DatagramPacket(recBuffer, recBuffer.length);
+            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 9876);
 
-        clientSocket.receive(recPkt);
+            clientSocket.send(sendPacket);
 
-        String informacao = new String(recPkt.getData(),
-                recPkt.getOffset(),
-                recPkt.getLength());
+            System.out.println("Mensagem enviada para o servidor!");
 
-        System.out.println("Recebido do servidor: " + informacao);
+            byte[] recBuffer = new byte[1024];
 
-        clientSocket.close();
+            DatagramPacket recPkt = new DatagramPacket(recBuffer, recBuffer.length);
 
+            clientSocket.receive(recPkt);
+
+            String informacao = new String(recPkt.getData(),
+                    recPkt.getOffset(),
+                    recPkt.getLength());
+
+            System.out.println("Recebido do servidor: " + informacao);
+        }
     }
 }
