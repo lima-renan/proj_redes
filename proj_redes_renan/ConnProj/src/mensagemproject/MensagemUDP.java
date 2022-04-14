@@ -1,20 +1,20 @@
+//MensagemUDP.java trata as mensagens que serão enviadas e recebids do cliente/servidor UDP
+
 /*
 
 Para compilar 
-                Passo 1: javac -d . MensagemUDP.java
-                Passo 2: java mensagemproject.MensagemUDP
+                Passo 1:  javac -d . MensagemUDP.java
 */
 
 package mensagemproject;
 
-import java.io.IOException;
 import java.util.Scanner;
 
 //Cabeçalho que será usado para as mensagens
 public class MensagemUDP {
     private String id; //id da mensagem
     private String mensagem; //conteúdo da mensagem
-    private int tamanho; //tamanho da mensagem em bytes
+    private String tamanho; //tamanho da mensagem em bytes
 
     //Construtores da classe
     public MensagemUDP(){
@@ -22,16 +22,23 @@ public class MensagemUDP {
     }
 
     public MensagemUDP(String id, String msg){
+        this.id = id;
         this.mensagem = msg;
-    }
-
-    public String getMensagem(){
-        return mensagem;
+        this.tamanho = Integer.toString((msg.length()));
     }
 
     //Métodos setters e getters
-    public int getTamanho(){
-        return tamanho;
+
+    public String getMensagem(){
+        return this.mensagem;
+    }
+
+    public String getId(){
+        return this.id;
+    }
+   
+    public String getTamanho(){
+        return this.tamanho;
     }
 
     public void setId(String idt){
@@ -43,7 +50,7 @@ public class MensagemUDP {
     }
 
     public void setTamanho(int tmh){
-        this.tamanho = tmh;
+        this.tamanho = Integer.toString(tmh);
     }
 
 //Boas-vindas: Captura a mensagem que o usuário deseja enviar
@@ -92,7 +99,7 @@ public static void formatConf(String id){
 }
 
 //Verifica e configura a opção de envio
-    public static void setEnvio(String msg){
+    public static void setEnvio( MensagemUDP msg){
         //Solicita a opcao de envio
         System.out.println("Escolha o número da opção de envio:");
         System.out.println("1 - lenta");
@@ -107,28 +114,23 @@ public static void formatConf(String id){
         //Formata o input conforme a opção selecionada
         switch(opcao){
             case 1:
-                formatInp("lenta",msg,"0000");
+                formatInp("lenta",msg.getMensagem(),msg.getId());
                 break;
             case 2:
-                formatInp("perda",msg,"0000");
+                formatInp("perda",msg.getMensagem(),msg.getId());
                 break;
             case 3:
-                formatInp("fora de ordem",msg,"0000");
+                formatInp("fora de ordem",msg.getMensagem(),msg.getId());
                 break;
             case 4:
-                formatInp("duplicada",msg,"0000");
+                formatInp("duplicada",msg.getMensagem(),msg.getId());
                 break;
             case 5:
-                formatInp("normal",msg,"0000");
+                formatInp("normal",msg.getMensagem(),msg.getId());
                 break;
             default:
                 System.out.println("Opção inválida.");
         }
     }
     
-    public static void main (String[] args) throws IOException {
-        MensagemUDP msgudp = new MensagemUDP();
-        msgudp.setMensagem(capturaMensagem()); 
-        setEnvio(msgudp.getMensagem());
-    }
 }

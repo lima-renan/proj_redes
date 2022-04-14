@@ -1,3 +1,13 @@
+/*
+
+Para compilar 
+                Dependências: gson-2.9.0 repositorio Maven(site: https://mvnrepository.com/artifact/com.google.code.gson/gson/2.9.0 download: https://repo1.maven.org/maven2/com/google/code/gson/gson/2.9.0/gson-2.9.0.jar)
+                Para adicionar o gson-2.9.0 ao path do linux: export CLASSPATH=".:/diretorio_em_que_esta/gson-2.9.0.jar"
+
+                Passo 1: javac -d . UDPServer.java
+                Passo 2: java udpproject.UDPServer
+*/
+
 package udpproject;
 
 import java.io.IOException;
@@ -5,11 +15,17 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
+import com.google.gson.Gson;
+
+import mensagemproject.MensagemUDP;
+
+
 public class UDPServer {
 
     public static void main(String[] args){
         try {
-        
+
+            Gson recgson = new Gson(); //instância para gerar a mensagem a partir string json do cliente
             DatagramSocket serverSocket;
             serverSocket = new DatagramSocket(9876);
             
@@ -19,13 +35,21 @@ public class UDPServer {
 
                 DatagramPacket recPkt = new DatagramPacket(recBuffer, recBuffer.length);
 
-                System.out.println("Esperando alguma mensagem....");
-
                 serverSocket.receive(recPkt); //BLOCKING
+
+                String informacao = new String(recPkt.getData(),recPkt.getOffset(),recPkt.getLength());
+
+                MensagemUDP msgudp = recgson.fromJson(informacao, MensagemUDP.class);  //gera a mensagem a partir da string json recebida do cliente
+
+                MensagemUDP.formatRec(msgudp.getId(), "normal");
 
                 byte[] sendBuf = new byte[1024];
 
-                sendBuf = "sou o servidor".getBytes();
+                Gson gsonsend = new Gson();
+
+                String sendmsgudp = gsonsend.toJson(msgudp); //converte a mensagem em json
+
+                sendBuf = sendmsgudp.getBytes();
 
                 InetAddress IPAddress = recPkt.getAddress();
 
@@ -35,7 +59,6 @@ public class UDPServer {
 
                 serverSocket.send(sendPacket);
 
-                System.out.println("Mensagem enviada pelo server");
             }
 
         } catch (IOException e) {
