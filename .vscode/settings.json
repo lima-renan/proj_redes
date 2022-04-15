@@ -3,5 +3,9 @@
         "proj_redes_renan/Proj/src",
         "proj_redes_renan/ConnProj/src"
     ],
-    "java.dependency.packagePresentation": "hierarchical"
+    "java.dependency.packagePresentation": "hierarchical",
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "/usr/lib/jvm/java-8-openjdk-amd64/lib/gson-2.9.0.jar"
+    ]
 }

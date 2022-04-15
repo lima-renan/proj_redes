@@ -20,15 +20,16 @@ import com.google.gson.Gson;
 import mensagemproject.MensagemUDP;
 
 
-public class UDPServer {
+public class UDPServer{
 
     public static void main(String[] args){
         try {
 
             Gson recgson = new Gson(); //instância para gerar a mensagem a partir string json do cliente
             DatagramSocket serverSocket;
-            serverSocket = new DatagramSocket(9876);
-            
+            serverSocket = new DatagramSocket(9876); //cria novo datagrama socket na porta 9876
+
+            //O Servidor permanece funcionando
             while(true){ 
 
                 byte[] recBuffer = new byte[1024];
@@ -37,7 +38,7 @@ public class UDPServer {
 
                 serverSocket.receive(recPkt); //BLOCKING
 
-                String informacao = new String(recPkt.getData(),recPkt.getOffset(),recPkt.getLength());
+                String informacao = new String(recPkt.getData(),recPkt.getOffset(),recPkt.getLength()); //Datagrama do cliente é convertido em String json
 
                 MensagemUDP msgudp = recgson.fromJson(informacao, MensagemUDP.class);  //gera a mensagem a partir da string json recebida do cliente
 
