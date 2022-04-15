@@ -117,7 +117,7 @@ public static void enviaPacket (String jmsgudp, DatagramSocket clientSocket, Ine
 }
 
 //Verifica e configura a opção de envio
-    public static void setEnvio(MensagemUDP msg, DatagramSocket clientSocket, InetAddress IPAddress) throws IOException, InterruptedException{
+    public static String setEnvio(MensagemUDP msg, DatagramSocket clientSocket, InetAddress IPAddress) throws IOException, InterruptedException{
         //Solicita a opcao de envio
         System.out.println("Escolha o número da opção de envio:");
         System.out.println("1 - lenta");
@@ -128,24 +128,21 @@ public static void enviaPacket (String jmsgudp, DatagramSocket clientSocket, Ine
         System.out.print("Número: ");
         Scanner teclado = new Scanner(System.in);
         int opcao = teclado.nextInt();
-        String jmsgudp; // String para receber o json
+        String jmsgudp = preparaJson(msg); // String que recebe o json da mensagem
         //Formata o input conforme a opção selecionada
         switch(opcao){
             case 1: //envio lento
                 formatInp("lenta",msg.getMensagem(),msg.getId());
-                jmsgudp = preparaJson(msg);
                 Thread.sleep(4000); //aguarda 4s antes de enviar a mensagem para o servidor
                 enviaPacket(jmsgudp, clientSocket, IPAddress);
                 break;
             case 2: //envio com perda
                 formatInp("perda",msg.getMensagem(),msg.getId());
-                jmsgudp = preparaJson(msg);
-                Thread.sleep(10000); //aguarda 10s antes de enviar a mensagem para o servidor, porém o tempo é maior que o timeout e o pacote é perdido
-                enviaPacket(jmsgudp, clientSocket, IPAddress); //Quando há perda, o pacote não é enviado
+                //Thread.sleep(10000); //aguarda 10s antes de enviar a mensagem para o servidor, porém o tempo é maior que o timeout e o pacote é perdido
+                //enviaPacket(jmsgudp, clientSocket, IPAddress); //Quando há perda, o pacote não é enviado
                 break;
             case 3:
                 formatInp("fora de ordem",msg.getMensagem(),msg.getId());
-                jmsgudp = preparaJson(msg);
                  //Cria uma nova mensagem a partir do inteiro e da string  do input do usuário
                 int i = (Integer.parseInt(msg.getId()))+1; //próximo id
                 MensagemUDP msgudp = new MensagemUDP(String.format("%04d", i), MensagemUDP.capturaMensagem()); //id é passado como string de 4 dígitos
@@ -159,18 +156,25 @@ public static void enviaPacket (String jmsgudp, DatagramSocket clientSocket, Ine
                 break;
             case 4: //envio duplicado, envia duas vezes
                 formatInp("duplicada",msg.getMensagem(),msg.getId());
-                jmsgudp = preparaJson(msg);
                 enviaPacket(jmsgudp, clientSocket, IPAddress);
                 enviaPacket(jmsgudp, clientSocket, IPAddress);
                 break;
             case 5: //envio normal
                 formatInp("normal",msg.getMensagem(),msg.getId());
-                jmsgudp = preparaJson(msg);
                 enviaPacket(jmsgudp, clientSocket, IPAddress);
                 break;
             default:
                 System.out.println("Opção inválida.");
+            
         }
+        return jmsgudp;
+    }
+    //Envia um pacote na opção normal, para reenviar mensagem perdida 
+    public static String setEnvioNormal(MensagemUDP msg, DatagramSocket clientSocket, InetAddress IPAddress) throws IOException, InterruptedException{
+        String jmsgudp = preparaJson(msg); // String que recebe o json da mensagem
+        formatInp("normal",msg.getMensagem(),msg.getId());
+        enviaPacket(jmsgudp, clientSocket, IPAddress);
+        return jmsgudp;
     }
     
 }

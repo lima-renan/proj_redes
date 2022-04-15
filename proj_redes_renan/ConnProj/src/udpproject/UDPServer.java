@@ -40,7 +40,7 @@ public class UDPServer{
 
                 String informacao = new String(recPkt.getData(),recPkt.getOffset(),recPkt.getLength()); //Datagrama do cliente é convertido em String json
 
-                MensagemUDP msgudp = recgson.fromJson(informacao, MensagemUDP.class);  //gera a mensagem a partir da string json recebida do cliente
+                MensagemUDP msgudp = recgson.fromJson(informacao,MensagemUDP.class);  //gera a mensagem a partir da string json recebida do cliente
 
                 MensagemUDP.formatRec(msgudp.getId(), "normal");
 

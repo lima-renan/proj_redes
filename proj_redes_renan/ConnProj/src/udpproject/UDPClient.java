@@ -44,18 +44,8 @@ public class UDPClient {
             //Incrementa o inteiro para gerar o id da próxima mensagem
             i = i + 1;
 
-            MensagemUDP.setEnvio(msgudp, clientSocket, IPAddress); //Exibe na ta tela a mensagem que será enviada
-/*
-            String jmsgudp = sendgson.toJson(msgudp); //converte a mensagem em string json para envio
-            byte[] sendData = new byte [1024]; //buffer de envio
-            
-            sendData = (jmsgudp).getBytes();
-
-            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 9876); //cria datagrama de envio
-
-            //envia pacote conforme opção
-
-            clientSocket.send(sendPacket); */
+            //Prepara e envia o pacote e retorna a string json do pacote enviado 
+            String pkt = MensagemUDP.setEnvio(msgudp, clientSocket, IPAddress); //Exibe na ta tela a mensagem que será enviada
 
             try { //inicializa o temporizador
                 clientSocket.setSoTimeout(7000); //temporizador aguarda até 7s
@@ -73,21 +63,9 @@ public class UDPClient {
                 MensagemUDP respmsgudp = recgson.fromJson(informacao, MensagemUDP.class); //converte a string json em mensagem
 
                 MensagemUDP.formatConf(respmsgudp.getId()); //Exibe na tela o id da mensagem que foi confirmada pelo servidor
+
             }catch(SocketTimeoutException e){
-
-                byte[] recBuffer = new byte[1024]; //buffer de recebimento
-
-                DatagramPacket recPkt = new DatagramPacket(recBuffer, recBuffer.length); //cria pacote de recebimento
-
-                clientSocket.receive(recPkt); //recebe o pacote do servidor
-
-                String informacao = new String(recPkt.getData(),recPkt.getOffset(),recPkt.getLength()); //obtem a mensagem no formato json string
-
-                Gson recgson = new Gson(); //instância para gerar a string json de recebimento
-
-                MensagemUDP respmsgudp = recgson.fromJson(informacao, MensagemUDP.class); //converte a string json em mensagem
-
-                MensagemUDP.formatConf(respmsgudp.getId()); //Exibe na tela o id da mensagem que foi confirmada pelo servidor
+                pkt = MensagemUDP.setEnvioNormal(msgudp, clientSocket, IPAddress);
                 continue; //continua no loop
             }
         }
