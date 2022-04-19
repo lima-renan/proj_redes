@@ -6,7 +6,7 @@ Para compilar
                 Passo 1:  javac -d . MensagemUDP.java
 */
 
-package mensagemproject;
+package mensagem;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -18,17 +18,17 @@ import java.util.Scanner;
 import com.google.gson.Gson;
 
 // Cabeçalho que será usado para as mensagens
-public class MensagemUDP {
+public class Mensagem {
     private String id; //id da mensagem
     private String mensagem; //conteúdo da mensagem
     private String tamanho; //tamanho da mensagem em bytes
 
     // Construtores da classe
-    public MensagemUDP(){
+    public Mensagem(){
 
     }
 
-    public MensagemUDP(String id, String msg){
+    public Mensagem(String id, String msg){
         this.id = id;
         this.mensagem = msg;
         this.tamanho = Integer.toString((msg.length()));
@@ -84,7 +84,7 @@ public class MensagemUDP {
     }
 
 // Map que armazena os id e as mensagens que serão enviadas pelo sender
-    public static boolean senderEnviadas (MensagemUDP msg, HashMap<String, String> enviadas){
+    public static boolean senderEnviadas (Mensagem msg, HashMap<String, String> enviadas){
         if(enviadas.isEmpty() || enviadas.size() < 10){ // janela de tamanho máximo 10, caso seja maior a mensagem é descartada: return False
             enviadas.put(msg.getId(), msg.getMensagem()); // preenche o HashMap
             return true;
@@ -93,7 +93,7 @@ public class MensagemUDP {
     }
 
 // Envia o ACK para o cliente
-    public static void setACK (MensagemUDP msg, DatagramPacket recPkt, DatagramSocket serverSocket) throws IOException{
+    public static void setACK (Mensagem msg, DatagramPacket recPkt, DatagramSocket serverSocket) throws IOException{
         byte[] sendBuf = new byte[1024]; // Buffer para armazenar os bytes do ACK
 
         Gson gsonsend = new Gson(); // Objeto para armazernar a string json que será enviada no CAK
@@ -125,7 +125,7 @@ public class MensagemUDP {
 
         String informacao = new String(recPkt.getData(),recPkt.getOffset(),recPkt.getLength()); //Datagrama do cliente é convertido em String json
 
-        MensagemUDP msg = recgson.fromJson(informacao,MensagemUDP.class);  //gera a mensagem a partir da string json recebida do cliente
+        Mensagem msg = recgson.fromJson(informacao,Mensagem.class);  //gera a mensagem a partir da string json recebida do cliente
 
         if(recebidas.isEmpty()){//se ainda não foram recebidas mensagens
             formatRec(msg.getId(), "normal", null); // exibe na console que a mensagem foi recebida pelo receiver no modo normal
@@ -183,9 +183,9 @@ public class MensagemUDP {
 
         Gson recgson = new Gson(); // instância para gerar a string json de recebimento
 
-        MensagemUDP msg = recgson.fromJson(informacao, MensagemUDP.class); //converte a string json em mensagem
+        Mensagem msg = recgson.fromJson(informacao, Mensagem.class); //converte a string json em mensagem
 
-        MensagemUDP.formatConf(msg.getId()); // Exibe na tela o id da mensagem que foi confirmada pelo servidor
+        Mensagem.formatConf(msg.getId()); // Exibe na tela o id da mensagem que foi confirmada pelo servidor
 
         confirmadas.put(msg.getId(), msg.getMensagem()); // preenche o HashMap com os dados atualizados
         enviadas.remove(msg.getId()); // remove o id confirmado da janela de envio
@@ -223,7 +223,7 @@ public class MensagemUDP {
     }
 
 // Cria objeto que recebe o cabeçalho da mensagem que será enviada e retorna uma string json
-    public static String preparaJson (MensagemUDP msg){
+    public static String preparaJson (Mensagem msg){
         Gson sendgson = new Gson(); // instância para gerar a string json de envio
         String jmsgudp = sendgson.toJson(msg); // converte a mensagem em string json para envio
         return jmsgudp;
@@ -238,7 +238,7 @@ public class MensagemUDP {
     }
 
 // Verifica e configura a opção de envio
-    public static void setEnvio(MensagemUDP msg, int id, HashMap<String, String> enviadas, DatagramSocket clientSocket, InetAddress IPAddress) throws IOException, InterruptedException{
+    public static void setEnvio(Mensagem msg, int id, HashMap<String, String> enviadas, DatagramSocket clientSocket, InetAddress IPAddress) throws IOException, InterruptedException{
         // Solicita a opcao de envio
         System.out.println("Escolha o número da opção de envio:");
         System.out.println("1 - lenta");
@@ -292,7 +292,7 @@ public class MensagemUDP {
     }
 
 // Repetição Seletiva: Reenvia pacote perdido após o timeout no sender
-    public static void setReenvio(MensagemUDP msg, HashMap<String, String> enviadas, DatagramSocket clientSocket, InetAddress IPAddress) throws IOException, InterruptedException{
+    public static void setReenvio(Mensagem msg, HashMap<String, String> enviadas, DatagramSocket clientSocket, InetAddress IPAddress) throws IOException, InterruptedException{
         if(senderEnviadas(msg, enviadas)){ // se a janela de envio não tiver atingido a capacidade máxima, uma nova mensagem é inserida
             String jmsgudp = preparaJson(msg); // String que recebe o json da mensagem
             System.out.println("A mensagem de id " + msg.getId() + " será reenviada."); //Mensagem exibida na console.

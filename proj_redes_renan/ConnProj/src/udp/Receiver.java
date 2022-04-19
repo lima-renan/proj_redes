@@ -8,17 +8,16 @@ Para compilar
                 Passo 2: java udpproject.UDPServer
 */
 
-package udpproject;
+package udp;
 
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.util.HashMap;
 
+import mensagem.Mensagem;
 
-import mensagemproject.MensagemUDP;
 
-
-public class UDPServer{
+public class Receiver{
 
     public static void main(String[] args){
         try {
@@ -30,7 +29,7 @@ public class UDPServer{
             //O Servidor permanece funcionando
             while(true){ 
 
-                MensagemUDP.setRecebidas(serverSocket, recebidas); //Trata as mensagens recebidas e envia o ACK para o cliente
+                Mensagem.setRecebidas(serverSocket, recebidas); //Trata as mensagens recebidas e envia o ACK para o cliente
 
             }
 

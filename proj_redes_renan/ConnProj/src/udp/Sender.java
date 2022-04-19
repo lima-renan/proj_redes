@@ -6,7 +6,7 @@ Para compilar
                 Passo 2: java udpproject.UDPClient
 */
 
-package udpproject;
+package udp;
 
 
 import java.io.IOException;
@@ -15,10 +15,10 @@ import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.util.HashMap;
 
-import mensagemproject.MensagemUDP;
+import mensagem.Mensagem;
 
 
-public class UDPClient {
+public class Sender {
 
     public static void main (String[] args) throws IOException, InterruptedException {
 
@@ -35,10 +35,10 @@ public class UDPClient {
         // Enquanto o usuário não digitar sair ou Ctrl+C, o cliente continuará executando
         while(true){
 
-            i =  MensagemUDP.vazioId(i, confirmadas); // Verifica qual é a primeira posição vazia para o id
+            i =  Mensagem.vazioId(i, confirmadas); // Verifica qual é a primeira posição vazia para o id
 
             // Cria uma nova mensagem a partir do inteiro e da string  do input do usuário
-            MensagemUDP msgudp = new MensagemUDP(String.format("%04d", i), MensagemUDP.capturaMensagem()); //id é passado como string de 4 dígitos
+            Mensagem msgudp = new Mensagem(String.format("%04d", i), Mensagem.capturaMensagem()); //id é passado como string de 4 dígitos
 
             // caso o usuário digite sair, o processo é encerrado
             if((msgudp.getMensagem()).equals("sair")){
@@ -47,16 +47,16 @@ public class UDPClient {
             
 
             // Prepara, envia o pacote e retorna o cabeçalho do pacote enviado. Em seguida, retorna o id da mensagem enviada
-            MensagemUDP.setEnvio(msgudp, i, enviadas, clientSocket, IPAddress); // Exibe na ta tela a mensagem que será enviada, adiciona ao HashMap e envia ao servidor
+            Mensagem.setEnvio(msgudp, i, enviadas, clientSocket, IPAddress); // Exibe na ta tela a mensagem que será enviada, adiciona ao HashMap e envia ao servidor
 
             try { //inicializa o temporizador
-                MensagemUDP.senderACK(enviadas, confirmadas, clientSocket); //recebe o ACK do receiver
+                Mensagem.senderACK(enviadas, confirmadas, clientSocket); //recebe o ACK do receiver
 
             }catch(SocketTimeoutException e){ // Procedimento para quando houver timeout e não houver confirmação de recebimento
 
-                MensagemUDP.setReenvio(msgudp, enviadas, clientSocket, IPAddress); // Prepara, reenvia o pacote e retorna o cabeçalho do pacote enviado 
+                Mensagem.setReenvio(msgudp, enviadas, clientSocket, IPAddress); // Prepara, reenvia o pacote e retorna o cabeçalho do pacote enviado 
 
-                MensagemUDP.senderACK(enviadas, confirmadas, clientSocket); // Recebe o ACK do receiver
+                Mensagem.senderACK(enviadas, confirmadas, clientSocket); // Recebe o ACK do receiver
 
                 continue; // continua no loop
             }
