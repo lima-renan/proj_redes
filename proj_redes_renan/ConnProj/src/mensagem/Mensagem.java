@@ -27,7 +27,8 @@ public class Mensagem {
     public Mensagem(){
 
     }
-
+    
+    //Seção 3: Cabeçalho da mensagem que será transmitida
     public Mensagem(String id, String msg){
         this.id = id;
         this.mensagem = msg;
@@ -75,7 +76,7 @@ public class Mensagem {
         System.out.println(format);
     }
 
-// Retorna valor válido para o id baseada nas mensagens já confirmadas
+// Seção 3: Buffer confirmadas - Retorna valor válido para o id baseada nas mensagens já confirmadas
     public static int vazioId (int i, HashMap<String, String> confirmadas){
         while(confirmadas.containsKey(String.format("%04d", i))){ // enquanto houver o id em sequência no Map, i é iterado
             i = i + 1;
@@ -83,7 +84,7 @@ public class Mensagem {
         return i; // retorna um i que pode ser usado como id de mensagem
     }
 
-// Map que armazena os id e as mensagens que serão enviadas pelo sender
+//  HashMap que armazena os id e as mensagens que serão enviadas pelo sender
     public static boolean senderEnviadas (Mensagem msg, HashMap<String, String> enviadas){
         if(enviadas.isEmpty() || enviadas.size() < 10){ // janela de tamanho máximo 10, caso seja maior a mensagem é descartada: return False
             enviadas.put(msg.getId(), msg.getMensagem()); // preenche o HashMap
@@ -112,7 +113,7 @@ public class Mensagem {
     }
 
 
-// Trata as mensagens recebidas no receiver
+// Seção 3: Buffer recebidas - Trata as mensagens recebidas no receiver
     public static void setRecebidas (DatagramSocket serverSocket, HashMap<String, String> recebidas) throws IOException{
 
         Gson recgson = new Gson(); //instância para gerar a mensagem a partir string json do cliente
@@ -168,7 +169,7 @@ public class Mensagem {
     }
 
 
-// Recebe o ACK do receiver e libera atualiza a janela de envio do sender
+// Seção 3: Buffer recebidas - Recebe o ACK do receiver e libera atualiza a janela de envio do sender
     public static void senderACK (HashMap<String, String> enviadas, HashMap<String, String> confirmadas, DatagramSocket clientSocket) throws IOException{
         
         clientSocket.setSoTimeout(7000); // temporizador aguarda até 7s após o envio pelo setEnvio()
@@ -237,7 +238,7 @@ public class Mensagem {
         clientSocket.send(sendPacket); // envia pacote conforme opção
     }
 
-// Verifica e configura a opção de envio
+// Verifica e configura a opção de envio - Seção 3: Buffer de envio
     public static void setEnvio(Mensagem msg, int id, HashMap<String, String> enviadas, DatagramSocket clientSocket, InetAddress IPAddress) throws IOException, InterruptedException{
         // Solicita a opcao de envio
         System.out.println("Escolha o número da opção de envio:");
@@ -253,16 +254,16 @@ public class Mensagem {
             String jmsgudp = new String(); // String que recebe o json da mensagem
             // Formata o input conforme a opção selecionada
             switch(opcao){
-                case 1: //envio lento
+                case 1: // Seção 3: envio lento
                     formatInp("lenta",msg.getMensagem(),msg.getId());
                     Thread.sleep(4000); // aguarda 4s antes de enviar a mensagem para o servidor
                     jmsgudp = preparaJson(msg);
                     enviaPacket(jmsgudp, clientSocket, IPAddress);
                     break;
-                case 2: // envio com perda
+                case 2: // Seção 3: envio com perda
                     formatInp("perda",msg.getMensagem(),msg.getId()); // Pacote não é enviado
                     break;
-                case 3:
+                case 3: // Seção 3: envio fora de ordem
                     formatInp("fora de ordem",msg.getMensagem(),msg.getId());
                     // Cria uma nova mensagem a partir do inteiro e da string  do input do usuário
                     if (vazioId((id + 2), enviadas) == (id + 2)){// Verifica se há 2 posições a frente da posição de id que deveria ser enviada                       id = id + 2; // incrementa o id em duas posições
@@ -291,7 +292,7 @@ public class Mensagem {
         }
     }
 
-// Repetição Seletiva: Reenvia pacote perdido após o timeout no sender
+// Seção 3 - Repetição Seletiva: Reenvia pacote perdido após o timeout no sender
     public static void setReenvio(Mensagem msg, HashMap<String, String> enviadas, DatagramSocket clientSocket, InetAddress IPAddress) throws IOException, InterruptedException{
         if(senderEnviadas(msg, enviadas)){ // se a janela de envio não tiver atingido a capacidade máxima, uma nova mensagem é inserida
             String jmsgudp = preparaJson(msg); // String que recebe o json da mensagem
