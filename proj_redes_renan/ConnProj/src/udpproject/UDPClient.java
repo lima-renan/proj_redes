@@ -10,63 +10,55 @@ package udpproject;
 
 
 import java.io.IOException;
-import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
+import java.util.HashMap;
 
 import mensagemproject.MensagemUDP;
-import com.google.gson.Gson; //Biblioteca para manipulação de json
+
 
 public class UDPClient {
 
     public static void main (String[] args) throws IOException, InterruptedException {
-       
-        int i = 1; //inteiro que será usado como id da msg
 
-        Gson sendgson = new Gson(); //instância para gerar a string json de envio
+        HashMap<String, String> enviadas = new HashMap<>(); // Cria HashMap para armazenar mensagens enviadas
+
+        HashMap<String, String> confirmadas = new HashMap<>(); // Cria HashMap para armazenar os ACKs
+       
+        int i = 1; // inteiro que será usado como id da msg
 
         DatagramSocket clientSocket = new DatagramSocket(); // Sistema Operacional assina uma porta
 
-        InetAddress IPAddress = InetAddress.getByName("127.0.0.1"); //Define um IP
+        InetAddress IPAddress = InetAddress.getByName("127.0.0.1"); // Define um IP
 
-        //Enquanto o usuário não digitar sair ou Ctrl+C, o cliente continuará executando
+        // Enquanto o usuário não digitar sair ou Ctrl+C, o cliente continuará executando
         while(true){
 
-            //Cria uma nova mensagem a partir do inteiro e da string  do input do usuário
+            i =  MensagemUDP.vazioId(i, confirmadas); // Verifica qual é a primeira posição vazia para o id
+
+            // Cria uma nova mensagem a partir do inteiro e da string  do input do usuário
             MensagemUDP msgudp = new MensagemUDP(String.format("%04d", i), MensagemUDP.capturaMensagem()); //id é passado como string de 4 dígitos
 
-            //caso o usuário digite sair, o processo é encerrado
+            // caso o usuário digite sair, o processo é encerrado
             if((msgudp.getMensagem()).equals("sair")){
                 break;
             } 
             
-            //Incrementa o inteiro para gerar o id da próxima mensagem
-            i = i + 1;
 
-            //Prepara e envia o pacote e retorna a string json do pacote enviado 
-            String pkt = MensagemUDP.setEnvio(msgudp, clientSocket, IPAddress); //Exibe na ta tela a mensagem que será enviada
+            // Prepara, envia o pacote e retorna o cabeçalho do pacote enviado. Em seguida, retorna o id da mensagem enviada
+            MensagemUDP.setEnvio(msgudp, i, enviadas, clientSocket, IPAddress); // Exibe na ta tela a mensagem que será enviada, adiciona ao HashMap e envia ao servidor
 
             try { //inicializa o temporizador
-                clientSocket.setSoTimeout(7000); //temporizador aguarda até 7s
+                MensagemUDP.senderACK(enviadas, confirmadas, clientSocket); //recebe o ACK do receiver
 
-                byte[] recBuffer = new byte[1024]; //buffer de recebimento
+            }catch(SocketTimeoutException e){ // Procedimento para quando houver timeout e não houver confirmação de recebimento
 
-                DatagramPacket recPkt = new DatagramPacket(recBuffer, recBuffer.length); //cria pacote de recebimento
+                MensagemUDP.setReenvio(msgudp, enviadas, clientSocket, IPAddress); // Prepara, reenvia o pacote e retorna o cabeçalho do pacote enviado 
 
-                clientSocket.receive(recPkt); //recebe o pacote do servidor
+                MensagemUDP.senderACK(enviadas, confirmadas, clientSocket); // Recebe o ACK do receiver
 
-                String informacao = new String(recPkt.getData(),recPkt.getOffset(),recPkt.getLength()); //obtem a mensagem no formato json string
-
-                Gson recgson = new Gson(); //instância para gerar a string json de recebimento
-
-                MensagemUDP respmsgudp = recgson.fromJson(informacao, MensagemUDP.class); //converte a string json em mensagem
-
-                MensagemUDP.formatConf(respmsgudp.getId()); //Exibe na tela o id da mensagem que foi confirmada pelo servidor
-
-            }catch(SocketTimeoutException e){
-                pkt = MensagemUDP.setEnvioNormal(msgudp, clientSocket, IPAddress);
-                continue; //continua no loop
+                continue; // continua no loop
             }
         }
     }
